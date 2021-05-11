@@ -14,14 +14,17 @@ class OtoMotoScraper(scrapy.Spider):
     custom_settings = {
         'DOWNLOAD_DELAY': '1.0',
         'AUTOTHROTTLE_ENABLED': True,
-        'USER_AGENT': 'Peter Parkson (peter.parker@myemail.com)'
+        'DOWNLOADER_MIDDLEWARES': {
+            'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,
+            'scrapy_fake_useragent.middleware.RandomUserAgentMiddleware': 400,
+        }
     }
 
     offers_details = []
 
     def start_requests(self):
         urls = [
-            'https://www.otomoto.pl/osobowe/?search%5Border%5D=created_at%3Adesc&page=1',
+            'https://www.otomoto.pl/osobowe/',
         ]
         for url in urls:
             yield scrapy.Request(url=url, callback=self.parse)
@@ -37,12 +40,16 @@ class OtoMotoScraper(scrapy.Spider):
         offer_links = [link.get('href') for link in offers.find_all(
             'a', attrs={'class': 'offer-title__link'})]
 
-        i = 0
         for item_url in offer_links:
-            yield scrapy.Request(url=item_url, callback=self.parse_offer_details)
-            if i == 2:
-                break
-            i += 1
+            if 'carsmile' in item_url:
+                continue
+            else:
+                yield scrapy.Request(url=item_url, callback=self.parse_offer_details)
+
+        next_page = response.xpath(
+            '//*[@id="body-container"]/div[2]/div[2]/ul/li[7]/a/@href').get()
+        if next_page is not None:
+            yield scrapy.Request(url=next_page, callback=self.parse)
 
     def parse_offer_details(self, response):
         self.logger.info(
@@ -52,25 +59,32 @@ class OtoMotoScraper(scrapy.Spider):
 
         soup = BeautifulSoup(response.body, 'lxml')
 
-        details = soup.find('div', attrs={'class': 'offer-params with-vin'})\
-            .find_all('li', attrs={'class': 'offer-params__item'})
+        details = soup.find_all('li', attrs={'class': 'offer-params__item'})
 
         for index, detail in enumerate(details):
-            try:
+            if detail.find('a', attrs={'offer-params__link'}):
                 key = detail.find('span', attrs={'offer-params__label'}).text
                 value = detail.find('a', attrs={'offer-params__link'}).text
 
                 if isinstance(key, str) & isinstance(value, str):
                     details_dict[key.strip()] = value.strip()
 
-            except Exception as e:
-                self.logger.info(e)
+            else:
+                key = detail.find('span', attrs={'offer-params__label'}).text
+                value = detail.find('div', attrs={'offer-params__value'}).text
 
-            details_dict['cena'] = soup.find(
-                'span', attrs={'class': 'offer-price__number'}).text.strip()
-            details_dict['lokalizacja'] = soup.find(
-                'span', attrs={'class': 'seller-box__seller-address__label'}).text.strip()
-            details_dict['wyposazenie'] = [feature for feature in soup.]
+                if isinstance(key, str) & isinstance(value, str):
+                    details_dict[key.strip()] = value.strip()
+
+        details_dict['cena'] = soup.find(
+            'span', attrs={'class': 'offer-price__number'}).text.strip()
+        details_dict['lokalizacja'] = soup.find(
+            'span', attrs={'class': 'seller-box__seller-address__label'}).text.strip()
+
+        features = soup.find_all('li', attrs={'class': 'offer-features__item'})
+
+        details_dict['wyposazenie'] = [feature.text.strip()
+                                       for feature in features]
 
         self.offers_details.append(details_dict)
 
