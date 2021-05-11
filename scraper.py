@@ -1,12 +1,11 @@
 # %%
 import time
-import pandas as pd
 import scrapy
+import logging
+import pandas as pd
 import scrapy.crawler as crawler
 from scrapy.crawler import CrawlerProcess
 from bs4 import BeautifulSoup
-
-url = 'https://www.otomoto.pl/osobowe/'
 
 
 class OtoMotoScraper(scrapy.Spider):
@@ -64,8 +63,14 @@ class OtoMotoScraper(scrapy.Spider):
                 if isinstance(key, str) & isinstance(value, str):
                     details_dict[key.strip()] = value.strip()
 
-            except:
-                continue
+            except Exception as e:
+                self.logger.info(e)
+
+            details_dict['cena'] = soup.find(
+                'span', attrs={'class': 'offer-price__number'}).text.strip()
+            details_dict['lokalizacja'] = soup.find(
+                'span', attrs={'class': 'seller-box__seller-address__label'}).text.strip()
+            details_dict['wyposazenie'] = [feature for feature in soup.]
 
         self.offers_details.append(details_dict)
 
