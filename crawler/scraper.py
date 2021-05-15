@@ -1,9 +1,7 @@
-import logging
 import os
 import json
 import scrapy
 import datetime
-import pandas as pd
 import scrapy.crawler as crawler
 from scrapy.crawler import CrawlerProcess
 from bs4 import BeautifulSoup
@@ -19,7 +17,7 @@ class OtoMotoScraper(scrapy.Spider):
 
         Provides methods to iterate over all subpages containing passanger
         cars offers, as well as method to retrive all possible data provided by sellers,
-        thus parsed results may differ in number of attributes in case some seller provided all
+        thus parsed results may differ in number of acttributes in case some seller provided all
         possible information about the car or not. Class saves all downloaded information
         to json file line by line so there was no problem with RAM memmory usage.
 
@@ -138,10 +136,10 @@ class OtoMotoScraper(scrapy.Spider):
                                            for feature in features]
 
             self.save_to_file(details_dict)
-            logging.info("All car offer details downloaded correctly.")
+            logger.info("All car offer details downloaded correctly.")
 
         except Exception as e:
-            logging.warning("Failed to parse car offer details.")
+            logger.warning("Failed to parse car offer details.")
 
     def save_to_file(self, to_save):
         """Saving car details to a json file.
@@ -162,14 +160,14 @@ class OtoMotoScraper(scrapy.Spider):
             with open(file_path, mode="a") as out_file:
                 json.dump(to_save, out_file)
                 out_file.write("\n")
-                logging.info(
+                logger.info(
                     "Appended new data to already existing json file.")
 
         else:
             with open(file_path, mode="w") as out_file:
                 json.dump(to_save, out_file)
                 out_file.write("\n")
-                logging.info(
+                logger.info(
                     "Created and added first line of a data to json file.")
 
 
