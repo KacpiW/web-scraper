@@ -15,7 +15,7 @@ file_handler = logging.FileHandler(
     str(datetime.date.today().strftime("%d_%m_%Y")) + ".log")
 
 stream_handler.setLevel(logging.WARNING)
-file_handler.setLevel(logging.ERROR)
+file_handler.setLevel(logging.INFO)
 
 # Create and set formatters for handlers
 stream_format = logging.Formatter(

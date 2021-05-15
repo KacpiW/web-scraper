@@ -85,7 +85,10 @@ class OtoMotoScraper(scrapy.Spider):
         next_page = response.xpath(
             '//*[@id="body-container"]/div[2]/div[2]/ul/li[7]/a/@href').get()
         if next_page is not None:
+            logger.info("Next page - {np}".format(np=next_page))
             yield scrapy.Request(url=next_page, callback=self.parse)
+        else:
+            logger.info("No more pages to check.")
 
     def parse_offer_details(self, response):
         """ Parsing website and collecting all details regarding a car provided
