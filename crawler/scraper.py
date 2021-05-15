@@ -1,4 +1,3 @@
-# %%
 import os
 import json
 import scrapy
@@ -182,5 +181,3 @@ if __name__ == "__main__":
     process.crawl(OtoMotoScraper)
     spider = next(iter(process.crawlers)).spider
     process.start()
-
-# %%
