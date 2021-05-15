@@ -15,7 +15,7 @@ Python >=3.6
 ### Installation
 
 ```console 
-  pip install -r requitements.txt
+  pip install -r requirements.txt
 ```
 
 Or clone the git repo:
