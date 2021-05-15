@@ -1,3 +1,4 @@
+# %%
 import os
 import json
 import scrapy
@@ -58,7 +59,7 @@ class OtoMotoScraper(scrapy.Spider):
 
         Yields:
             [generator object]: Generator object conatining http request results
-                that is called on pase_offer_details method 
+                that is called on pase_offer_details method
         """
 
         logger.info(
@@ -82,8 +83,10 @@ class OtoMotoScraper(scrapy.Spider):
                 yield scrapy.Request(url=item_url, callback=self.parse_offer_details)
 
         # Clicking next page button if there is any
-        next_page = response.xpath(
-            '//*[@id="body-container"]/div[2]/div[2]/ul/li[7]/a/@href').get()
+        next_page = soup.find("li", attrs={"class": "next abs"})\
+            .find("a")\
+            .get("href")
+
         if next_page is not None:
             logger.info("Next page - {np}".format(np=next_page))
             yield scrapy.Request(url=next_page, callback=self.parse)
@@ -179,3 +182,5 @@ if __name__ == "__main__":
     process.crawl(OtoMotoScraper)
     spider = next(iter(process.crawlers)).spider
     process.start()
+
+# %%
