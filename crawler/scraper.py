@@ -82,15 +82,16 @@ class OtoMotoScraper(scrapy.Spider):
                 yield scrapy.Request(url=item_url, callback=self.parse_offer_details)
 
         # Clicking next page button if there is any
-        next_page = soup.find("li", attrs={"class": "next abs"})\
-            .find("a")\
-            .get("href")
-
-        if next_page is not None:
+        try:
+            next_page = soup.find("li", attrs={"class": "next abs"})\
+                .find("a")\
+                .get("href")
             logger.info("Next page - {np}".format(np=next_page))
             yield scrapy.Request(url=next_page, callback=self.parse)
-        else:
-            logger.info("No more pages to check.")
+
+        except Exception as e:
+            logger.info("Probably no more pages left to search offers.")
+            exit()
 
     def parse_offer_details(self, response):
         """ Parsing website and collecting all details regarding a car provided
