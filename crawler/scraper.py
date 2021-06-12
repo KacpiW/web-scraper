@@ -26,7 +26,7 @@ class OtoMotoScraper(scrapy.Spider):
     name = "otomotospider"
 
     custom_settings = {
-        "DOWNLOAD_DELAY": "1.0",
+        "DOWNLOAD_DELAY": "1.2",
         "AUTOTHROTTLE_ENABLED": True,
         "DOWNLOADER_MIDDLEWARES": {
             "scrapy.downloadermiddlewares.useragent.UserAgentMiddleware": None,
