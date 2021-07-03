@@ -11,7 +11,7 @@ stream_handler = logging.StreamHandler()
 file_handler = logging.FileHandler(
     os.path.abspath(
         os.path.join(
-            os.path.dirname(__file__), os.pardir, 'logs/otomoto_passanger_car_data_')) +
+            os.path.dirname(__file__), os.pardir, 'otomoto_passanger_car_data_')) +
     str(datetime.date.today().strftime("%d_%m_%Y")) + ".log")
 
 stream_handler.setLevel(logging.WARNING)

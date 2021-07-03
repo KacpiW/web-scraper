@@ -158,7 +158,7 @@ class OtoMotoScraper(scrapy.Spider):
         # Setting path by going to current folder parent directory
         # and set it to results/ directory
         save_path = os.path.abspath(os.path.join(os.path.dirname(
-            __file__), os.pardir, 'results/otomoto_passanger_car_data_'))
+            __file__), os.pardir, 'otomoto_passanger_car_data_'))
         file_path = save_path + \
             str(datetime.date.today().strftime("%d_%m_%Y")) + ".json"
 
