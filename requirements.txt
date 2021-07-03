@@ -2,3 +2,4 @@ json==2.0.9
 scrapy==2.4.1
 beautfulsoup4==4.9.3
 logging==0.5.1.2
+scrapy-fake-user-agent==1.4.4
